@@ -1,0 +1,19 @@
+[Unit]
+Description=Supermicro Fan Control
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/fancontrol --config /etc/fancontrol/fancontrol.toml
+ExecStopPost=/usr/bin/ipmitool raw 0x30 0x70 0x66 0x01 0 100
+ExecStopPost=/usr/bin/ipmitool raw 0x30 0x70 0x66 0x01 1 100
+Restart=on-failure
+RestartSec=5
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

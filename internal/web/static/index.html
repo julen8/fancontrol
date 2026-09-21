@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fan Control</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="login-view" class="login-shell hidden">
+    <form id="login-form" class="login-panel">
+      <div class="brand-mark">FC</div>
+      <h1>Fan Control</h1>
+      <p>服务器散热控制台</p>
+      <label>用户名<input id="login-user" autocomplete="username" required></label>
+      <label>密码<input id="login-password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">登录</button>
+    </form>
+  </div>
+
+  <main id="app-view" class="hidden">
+    <header>
+      <div><span class="brand-mark small">FC</span><strong>Fan Control</strong></div>
+      <div class="header-actions">
+        <span id="system-state" class="status-pill">正在连接</span>
+        <button id="logout" class="quiet">退出</button>
+        <button id="save" class="primary">保存并应用</button>
+      </div>
+    </header>
+
+    <section class="overview" aria-label="实时状态">
+      <div><span>CPU 温度</span><strong id="cpu-temp">--</strong></div>
+      <div><span>CPU 输出</span><strong id="cpu-speed">--</strong></div>
+      <div><span>硬盘最高温度</span><strong id="hdd-temp">--</strong></div>
+      <div><span>系统输出</span><strong id="hdd-speed">--</strong></div>
+    </section>
+
+    <section class="controllers">
+      <article class="controller" data-controller="cpu">
+        <div class="section-title"><div><span class="eyebrow">ZONE 0</span><h2>CPU 风扇</h2></div><label class="switch"><input class="enabled" type="checkbox"><span></span></label></div>
+        <div class="fan-readings" aria-label="CPU 风扇实时转速"><span class="empty">等待转速数据</span></div>
+        <div class="segmented"><button data-mode="curve">温度曲线</button><button data-mode="fixed">固定风速</button></div>
+        <div class="fixed-editor hidden">
+          <label>固定风速 <output class="fixed-output">50%</output><input class="fixed-speed" type="range" min="1" max="100"></label>
+        </div>
+        <div class="curve-editor">
+          <div class="curve-visual"><svg viewBox="0 0 480 180" role="img" aria-label="风扇曲线"><g class="grid"></g><polyline></polyline><g class="dots"></g></svg></div>
+          <div class="curve-table"></div>
+          <button class="quiet add-point" type="button">添加控制点</button>
+        </div>
+        <div class="controller-meta"><span class="controller-status">等待数据</span><button class="quiet test-fan" type="button">测试 5 秒</button></div>
+      </article>
+
+      <article class="controller" data-controller="hdd">
+        <div class="section-title"><div><span class="eyebrow">ZONE 1</span><h2>系统风扇</h2></div><label class="switch"><input class="enabled" type="checkbox"><span></span></label></div>
+        <div class="fan-readings" aria-label="系统风扇实时转速"><span class="empty">等待转速数据</span></div>
+        <div class="segmented"><button data-mode="curve">温度曲线</button><button data-mode="fixed">固定风速</button></div>
+        <div class="fixed-editor hidden">
+          <label>固定风速 <output class="fixed-output">40%</output><input class="fixed-speed" type="range" min="1" max="100"></label>
+        </div>
+        <div class="curve-editor">
+          <div class="curve-visual"><svg viewBox="0 0 480 180" role="img" aria-label="风扇曲线"><g class="grid"></g><polyline></polyline><g class="dots"></g></svg></div>
+          <div class="curve-table"></div>
+          <button class="quiet add-point" type="button">添加控制点</button>
+        </div>
+        <div class="controller-meta"><span class="controller-status">等待数据</span><button class="quiet test-fan" type="button">测试 5 秒</button></div>
+      </article>
+    </section>
+
+    <section class="section disks-section">
+      <div class="section-title"><div><span class="eyebrow">SMART</span><h2>硬盘监控</h2></div><button id="rescan" class="quiet">重新扫描</button></div>
+      <div id="disk-list" class="disk-list"><p class="empty">正在扫描硬盘...</p></div>
+    </section>
+
+    <details class="section advanced">
+      <summary><span><span class="eyebrow">SYSTEM</span><strong>高级设置</strong></span><span>展开</span></summary>
+      <div class="settings-grid">
+        <label>监听地址<input id="listen" type="text"></label>
+        <label>Session 有效期<input id="session-timeout" type="text"></label>
+        <label>IPMI 路径<input id="ipmi-command" type="text"></label>
+        <label>IPMI 超时<input id="ipmi-timeout" type="text"></label>
+        <label>退出风速<input id="exit-speed" type="number" min="1" max="100"></label>
+        <label>CPU 轮询周期<input id="cpu-poll" type="text"></label>
+        <label>硬盘轮询周期<input id="hdd-poll" type="text"></label>
+        <label>CPU 安全风速<input id="cpu-safe" type="number" min="1" max="100"></label>
+        <label>硬盘安全风速<input id="hdd-safe" type="number" min="1" max="100"></label>
+        <label>CPU 临界温度<input id="cpu-critical" type="number" min="1" max="120"></label>
+        <label>硬盘临界温度<input id="hdd-critical" type="number" min="1" max="120"></label>
+        <label class="check"><input id="avoid-wakeup" type="checkbox">避免唤醒休眠硬盘</label>
+      </div>
+      <hr>
+      <form id="password-form" class="password-form">
+        <strong>修改登录密码</strong>
+        <input id="current-password" type="password" autocomplete="current-password" placeholder="当前密码">
+        <input id="new-password" type="password" autocomplete="new-password" placeholder="新密码，至少 6 位">
+        <button class="quiet" type="submit">修改密码</button>
+      </form>
+    </details>
+
+    <section class="section events-section">
+      <div class="section-title"><div><span class="eyebrow">ACTIVITY</span><h2>最近事件</h2></div></div>
+      <div id="events" class="events"><p class="empty">暂无事件</p></div>
+    </section>
+  </main>
+
+  <dialog id="notice-dialog" aria-labelledby="notice-title">
+    <form method="dialog" class="dialog-panel">
+      <div class="dialog-heading">
+        <span id="notice-mark" class="dialog-mark" aria-hidden="true">i</span>
+        <h2 id="notice-title">操作提示</h2>
+      </div>
+      <p id="notice-message"></p>
+      <div class="dialog-actions"><button class="primary" value="confirm">确认</button></div>
+    </form>
+  </dialog>
+  <script src="/app.js" defer></script>
+</body>
+</html>

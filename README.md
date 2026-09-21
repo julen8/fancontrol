@@ -32,7 +32,7 @@
 ## 编译
 
 ```bash
-go build -o fancontrol ./cmd/fancontrol
+CGO_ENABLED=0 GOOS=linux go build ./cmd/fancontrol
 ```
 
 ## 运行
